@@ -27,6 +27,8 @@
       <library>
         <CLASSES>
           <root url="file://$MODULE_DIR$/lib" />
+          <root url="jar://$MODULE_DIR$/lib/scalaj-http_2.10-1.0.1.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/scalaz3_2.10-2.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
