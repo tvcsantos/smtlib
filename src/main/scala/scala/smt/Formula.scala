@@ -1,8 +1,8 @@
 package scala.smt
 
+import scalax.ttype.Typable
 import scalax.util._
-import scalax.visitor.Typable
-import scalax.visitor.TypeChecker
+import scalax.visitor.{Visitor, Visitable, TypeChecker}
 
 sealed trait Formula extends Typable[Formula, Type] with
 	Visitable[Formula] {

@@ -1,9 +1,9 @@
 package scala.smt
 
+import scalax.ttype.Typable
 import scalax.util._
 import scala.smt.visitor.FormulaTypeChecker
-import scalax.visitor.Typable
-import scalax.visitor.TypeChecker
+import scalax.visitor.{Visitor, Visitable, TypeChecker}
 
 sealed trait Term extends Typable[Term, Type] with Visitable[Term] {
   override def toString = {

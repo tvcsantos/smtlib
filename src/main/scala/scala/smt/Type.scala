@@ -1,6 +1,8 @@
 package scala.smt
 
-trait Type extends scalax.visitor.Type {
+import scalax.ttype
+
+trait Type extends ttype.Type {
   import typecheck.TypeChecker
   
   def getHierarchy() =

@@ -28,7 +28,7 @@ class Z3SolverWeb(fsimpl:Simplifier[Formula],
   override protected def runSolver(code:String):Stream[String] = {
     import scalaj.http.HttpRequest
     import scalaj.http.Http
-    import scalax.util.ScalaException
+    import scalax.exception.ScalaException
     try {
     val request: HttpRequest =
       Http("http://rise4fun.com/rest/ask/z3/").postData(code)
