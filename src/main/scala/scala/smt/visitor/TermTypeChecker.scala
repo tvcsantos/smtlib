@@ -8,6 +8,10 @@ import scalax.visitor.WrongArgumentsNumber
 import scalax.visitor.NameNotFound
 
 class TermTypeChecker extends TypeChecker[Term, Type, Unit] {
+
+  def getTypeExpander() =
+    //FIXME type expander for smt solver is not defined
+    throw new Exception("not defined for this class!")
   
   def visit(e:Term, a:(Environment[String, Type], Unit)):Term = {
     e match {

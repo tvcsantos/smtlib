@@ -9,6 +9,10 @@ import scalax.visitor.NameNotFound
 
 class FormulaTypeChecker(tc:TypeChecker[Term, Type, Unit]) extends 
 	TypeChecker[Formula, Type, Unit] {
+
+  def getTypeExpander() =
+    //FIXME type expander for smt solver is not defined
+    throw new Exception("not defined for this class!")
   
   protected def visit(e:Formula, a:Environment[String, Type]):Formula = {
     visit(e, (a, ()))
