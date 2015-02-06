@@ -236,9 +236,9 @@ abstract class AbstractSMTSolver(fsimpl:Simplifier[Formula],
   protected def checkSatImplInteractive(as:Set[(Formula, AST)], 
       tm:Map[Type, TypeDef], 
       dm:Map[Type, (Sort, Set[FunDef], Set[TheoDef])]):Option[SMTResult] = {
-    println(s"${if (as.size <= 1) 
+    Console.out.println(s"${if (as.size <= 1)
       "Is this formula" else "Are these formulas"} satisfiable?")
-    as.foreach(x => println(x._1))
+    as.foreach(x => Console.out.println(x._1))
     readChar match {
       case 'y' => Some(SMTResult.SAT)
       case 'n' => Some(SMTResult.UNSAT)
@@ -250,9 +250,9 @@ abstract class AbstractSMTSolver(fsimpl:Simplifier[Formula],
       tm:Map[Type, TypeDef], 
       dm:Map[Type, (Sort, Set[FunDef], Set[TheoDef])]):
       Option[(SMTResult, Option[SMTModel])] = {
-    println(s"${if (as.size <= 1) 
+    Console.out.println(s"${if (as.size <= 1)
       "Is this formula" else "Are these formulas"} satisfiable?")
-    as.foreach(x => println(x._1))
+    as.foreach(x => Console.out.println(x._1))
     readChar match {
       //TODO fix this user has to introduce model
       case 'y' => Some(SMTResult.SAT, None)

@@ -98,9 +98,9 @@ trait SMTSolver extends Debuggable {
         } else {
           preCheckSat()
           smtCallCount += 1
-          if (isDebug()) {
+          /*if (isDebug()) {
             getDebugger().println(as)
-          }
+          }*/
           res = checkSat(as)
           postCheckSat()
         }
