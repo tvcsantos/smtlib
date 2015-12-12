@@ -1,5 +1,0 @@
-DATATYPE
-Record = mkRecord(m:INT)
-END;
-ASSERT (m(mkRecord(4)) = 5);
-CHECKSAT;
