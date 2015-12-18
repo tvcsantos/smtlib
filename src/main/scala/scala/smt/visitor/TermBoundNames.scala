@@ -4,6 +4,8 @@ import scala.smt._
 import scalax.visitor.BoundNamesVisitor
 
 class TermBoundNames extends BoundNamesVisitor[Term] {
+
+  import scalax.visitor.VisitorException
   
   def visit(e:Term, a:Unit = ()):Set[String] = {
     e match {
@@ -13,6 +15,8 @@ class TermBoundNames extends BoundNamesVisitor[Term] {
         x.args.flatMap(visit(_)).toSet
       case x:NumLit => Set()
       case x:BoolLit => Set()
+      case x:AbstractTerm =>
+        throw new VisitorException(s"Term $x not supported")
     }
   }
 }

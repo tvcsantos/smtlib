@@ -54,10 +54,10 @@ case class Not(f:Formula) extends AbstractFormula(Some(BoolType)) {
   def isTyped() = ttype != None && (f isTyped)
 }
 
-case class If(c:Formula, then:Formula, eelse:Formula) 
+case class If(c:Formula, tthen:Formula, eelse:Formula)
 	extends AbstractFormula(Some(BoolType)) {
   def isTyped() = ttype != None && (c isTyped) && 
-		  (then isTyped) && (eelse isTyped)
+		  (tthen isTyped) && (eelse isTyped)
 }
 
 case class Let(x:String, t:Term, in:Formula) 

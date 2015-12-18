@@ -9,6 +9,8 @@ import scalax.visitor.NameNotFound
 
 class TermTypeChecker extends TypeChecker[Term, Type, Unit] {
 
+  import scalax.visitor.VisitorException
+
   def getTypeExpander() =
     //FIXME type expander for smt solver is not defined
     throw new Exception("not defined for this class!")
@@ -40,6 +42,8 @@ class TermTypeChecker extends TypeChecker[Term, Type, Unit] {
             )
             Function(x.name, nl, Some(zft.ret)/*, x.classType*/)
         }
+      case x:AbstractTerm =>
+        throw new VisitorException(s"Term $x not supported")
     }
   }
 }

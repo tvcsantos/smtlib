@@ -4,6 +4,8 @@ import scala.smt._
 import scalax.visitor.FreeVariablesVisitor
 
 class TermFreeVariables extends FreeVariablesVisitor[Term, Identifier] {
+
+  import scalax.visitor.VisitorException
   
   def visit(e:Term, a:Unit = ()):Set[Identifier] = {
     e match {
@@ -14,6 +16,8 @@ class TermFreeVariables extends FreeVariablesVisitor[Term, Identifier] {
         x.args.flatMap(visit(_)).toSet + Variable(x.name, Some(ft))
       case x:NumLit => Set()
       case x:BoolLit => Set()
+      case x:AbstractTerm =>
+        throw new VisitorException(s"Term $x not supported")
     }
   }
 }

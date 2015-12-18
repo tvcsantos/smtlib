@@ -4,6 +4,9 @@ import scala.smt._
 import scalax.visitor.SubstitutionVisitor
 
 class TermSubstitution extends SubstitutionVisitor[Term, Term] {
+
+  import scalax.visitor.VisitorException
+
   def visit(e:Term, a:(String, Term)):Term = {
     val x = a._1
     val t = a._2
@@ -21,6 +24,8 @@ class TermSubstitution extends SubstitutionVisitor[Term, Term] {
 	        nn = v.name
         }	      
 	    Function(nn, y.args.map(visit(_, (x, t))), ft/*, y.classType*/)
+      case x:AbstractTerm =>
+        throw new VisitorException(s"Term $x not supported")
     }
   }
 }

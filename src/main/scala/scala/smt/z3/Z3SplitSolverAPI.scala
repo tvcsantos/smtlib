@@ -28,19 +28,19 @@ class Z3SplitSolverAPI(
       tm:Map[Type, TypeDef], 
       dm:Map[Type, (Sort, Set[FunDef], Set[TheoDef])]):Option[SMTResult] = {
     
-    dm.foreach(d => d._2._3.foreach(z3ctx.assertCnstr(_)))
+    dm.foreach(d => d._2._3.foreach(z3Solver.assertCnstr(_)))
     
     val splitted = split(as)
         
     val rs = splitted.map(e => {
-      z3ctx.push()
-      e.foreach(x => z3ctx.assertCnstr(x._2))	
-      val r = z3ctx.check match {
+      z3Solver.push()
+      e.foreach(x => z3Solver.assertCnstr(x._2))
+      val r = z3Solver.check match {
       	case None => None
       	case Some(true) => Some(SMTResult.SAT)
       	case Some(false) => Some(SMTResult.UNSAT)
       }
-      if (z3ctx.getNumScopes > 0) z3ctx.pop(1)
+      if (z3Solver.getNumScopes > 0) z3Solver.pop(1)
       r
     })
     

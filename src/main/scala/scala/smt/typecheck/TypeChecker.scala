@@ -8,6 +8,8 @@ object TypeChecker {
     Map => MutableMap,
     HashMap => MutableHashMap
   }
+
+  import scalax.visitor.VisitorException
         
   def subst(t:Type, tv:TypeVariable, c:Type):Type = {
     t match {
@@ -74,8 +76,8 @@ object TypeChecker {
       case Equiv(l, r) =>
         getTypes(l) ++ getTypes(r) + BoolType
       case Not(b) => getTypes(b) + BoolType
-      case If(c, then, eelse) =>
-        getTypes(c) ++ getTypes(then) ++ getTypes(eelse)
+      case If(c, tthen, eelse) =>
+        getTypes(c) ++ getTypes(tthen) ++ getTypes(eelse)
       case Let(x, t, b) =>
         getTypes(t) ++ getTypes(b)
       case QuantifiedFormula(q, l, qf) =>
@@ -88,6 +90,8 @@ object TypeChecker {
         list.flatMap(e => getTypes(e)).toSet + BoolType
       case Eqs(set) =>
         set.flatMap(e => getTypes(e)) + BoolType
+      case x:AbstractFormula =>
+        throw new VisitorException(s"Formula $x not supported")
     }    
   }
   
@@ -98,6 +102,8 @@ object TypeChecker {
       case x:Function =>
         x.args.flatMap(getTypes(_)).toSet + x.getType.get
       case x:Value => Set(x.getType.get)
+      case x:AbstractTerm =>
+        throw new VisitorException(s"Term $x not supported")
     }
   }
   

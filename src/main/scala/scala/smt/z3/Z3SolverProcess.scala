@@ -185,8 +185,8 @@ class Z3SolverProcess(fsimpl:Simplifier[Formula],
     seq.mkString("(distinct ", " ", ")")
   }
     
-  protected def mkIf(cond:AST, then:AST, eelse:AST):AST = 
-    s"(if $cond $then $eelse)"
+  protected def mkIf(cond:AST, tthen:AST, eelse:AST):AST =
+    s"(if $cond $tthen $eelse)"
     
   protected def mkOr(seq:Seq[AST]):AST = {
     seq.mkString("(or ", " ", ")")

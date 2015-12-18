@@ -10,6 +10,8 @@ import scalax.visitor.NameNotFound
 class FormulaTypeChecker(tc:TypeChecker[Term, Type, Unit]) extends 
 	TypeChecker[Formula, Type, Unit] {
 
+  import scalax.visitor.VisitorException
+
   def getTypeExpander() =
     //FIXME type expander for smt solver is not defined
     throw new Exception("not defined for this class!")
@@ -59,11 +61,11 @@ class FormulaTypeChecker(tc:TypeChecker[Term, Type, Unit]) extends
         if (nb.getType.get.getRefinedType != BoolType)
           throw new WrongType(s"$nb type must be bool")
         Not(nb)
-      case If(c, then, eelse) =>
+      case If(c, tthen, eelse) =>
         val nc = visit(c, env)
         if (nc.getType.get.getRefinedType != BoolType)
           throw new WrongType(s"$nc type must be bool")
-        val nthen = visit(then, env)
+        val nthen = visit(tthen, env)
         if (nthen.getType.get.getRefinedType != BoolType)
           throw new WrongType(s"$nthen type must be bool")
         val nelse = visit(eelse, env)
@@ -145,6 +147,8 @@ class FormulaTypeChecker(tc:TypeChecker[Term, Type, Unit]) extends
         //different type not equal!
         (x expand) foreach(y => visit(y, (env, ())))
         Eqs(x.s.map(y => tc.visit(y, (env, ())).asInstanceOf[y.type]))
+      case x:AbstractFormula =>
+        throw new VisitorException(s"Formula $x not supported")
     }
   }
 }

@@ -28,12 +28,13 @@ class Z3SolverAPIParse(fsimpl:Simplifier[Formula],
   
   val cfg = new Z3Config("MODEL" -> false)
 
-  override def runSMT(code:String):Option[SMTResult] = {  
+  override def runSMT(code:String):Option[SMTResult] = {
     val z3ctx = new Z3Context(cfg)
     z3ctx.config.setParamValue("MODEL", getModel.toString)
     val parsedAST = z3ctx.parseSMTLIB2String(code)
-    z3ctx.assertCnstr(parsedAST)
-    val r = z3ctx.check
+    val z3solver = z3ctx.mkSolver()
+    z3solver/*z3ctx*/.assertCnstr(parsedAST)
+    val r = z3solver/*z3ctx*/.check
     z3ctx.delete
     r match {
       case None => None

@@ -5,7 +5,9 @@ import scalax.visitor.FreeNamesVisitor
 
 class FormulaFreeNames(tv:FreeNamesVisitor[Term])
 	extends FreeNamesVisitor[Formula] {
-  
+
+  import scalax.visitor.VisitorException
+
   def visit(e:Formula, a:Unit = ()):Set[String] = {
     e match {
       case x:BoolFormula => Set()
@@ -18,8 +20,8 @@ class FormulaFreeNames(tv:FreeNamesVisitor[Term])
       case Equiv(l, r) =>
         visit(l) ++ visit(r)
       case Not(b) => visit(b)
-      case If(c, then, eelse) =>
-        visit(c) ++ visit(then) ++ visit(eelse)
+      case If(c, tthen, eelse) =>
+        visit(c) ++ visit(tthen) ++ visit(eelse)
       case Let(x, t, b) =>
         (tv visit(t)) ++ (visit(b) - x)
       case QuantifiedFormula(q, l, f) =>
@@ -34,6 +36,8 @@ class FormulaFreeNames(tv:FreeNamesVisitor[Term])
         list.flatMap(tv visit(_)).toSet
       case Eqs(set) =>
         set.flatMap(tv visit(_))
+      case x:AbstractFormula =>
+        throw new VisitorException(s"Formula $x not supported")
     }
   }
 }

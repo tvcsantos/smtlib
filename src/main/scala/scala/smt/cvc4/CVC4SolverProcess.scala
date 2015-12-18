@@ -176,8 +176,8 @@ class CVC4SolverProcess(fsimpl:Simplifier[Formula],
     seq.mkString("DISTINCT(", ", ", ")")
   }
     
-  protected def mkIf(cond:AST, then:AST, eelse:AST):AST = 
-    s"(IF $cond THEN $then ELSE $eelse ENDIF)"
+  protected def mkIf(cond:AST, tthen:AST, eelse:AST):AST =
+    s"(IF $cond THEN $tthen ELSE $eelse ENDIF)"
     
   protected def mkOr(seq:Seq[AST]):AST = {
     seq.mkString("(", " OR ", ")")

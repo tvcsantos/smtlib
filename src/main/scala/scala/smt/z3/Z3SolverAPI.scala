@@ -54,6 +54,7 @@ class Z3SolverAPI(fsimpl:Simplifier[Formula],
   
   protected val cfg = new Z3Config(/*"MODEL" -> false*/)
   protected val z3ctx = new Z3Context(cfg)
+  protected val z3Solver = z3ctx.mkSolver()
   protected val intSort = z3ctx.mkIntSort
   protected val boolSort = z3ctx.mkBoolSort
   
@@ -61,19 +62,19 @@ class Z3SolverAPI(fsimpl:Simplifier[Formula],
   protected def getBoolSort():Sort = boolSort
   
   protected[smt] def preCheckSat/*Impl*/():Unit = {
-    z3ctx.push
+    z3Solver.push
   }
   
   protected[smt] def postCheckSat/*Impl*/():Unit = {
-    if (z3ctx.getNumScopes > 0) z3ctx.pop(1)
+    if (z3Solver.getNumScopes > 0) z3Solver.pop(1)
   }
     
   protected def checkSatImplAuto(as:Set[(Formula, AST)], 
       tm:Map[Type, TypeDef], 
       dm:Map[Type, (Sort, Set[FunDef], Set[TheoDef])]):Option[SMTResult] = {
-    dm.foreach(d => d._2._3.foreach(z3ctx.assertCnstr(_)))
-    as.foreach(x => z3ctx.assertCnstr(x._2))	
-	val r = z3ctx.check match {
+    dm.foreach(d => d._2._3.foreach(z3Solver.assertCnstr(_)))
+    as.foreach(x => z3Solver.assertCnstr(x._2))
+	val r = z3Solver.check match {
       case None => None
       case Some(true) => Some(SMTResult.SAT)
       case Some(false) => Some(SMTResult.UNSAT)
@@ -85,14 +86,20 @@ class Z3SolverAPI(fsimpl:Simplifier[Formula],
       tm:Map[Type, TypeDef], 
       dm:Map[Type, (Sort, Set[FunDef], Set[TheoDef])]):
       Option[(SMTResult, Option[SMTModel])] = {
-    dm.foreach(d => d._2._3.foreach(z3ctx.assertCnstr(_)))
-    as.foreach(x => z3ctx.assertCnstr(x._2))
-	val r = z3ctx.checkAndGetModel match {
+    dm.foreach(d => d._2._3.foreach(z3Solver.assertCnstr(_)))
+    as.foreach(x => z3Solver.assertCnstr(x._2))
+    val r = z3Solver.check match {
+      case None => None
+      case Some(true) => Some((SMTResult.SAT, Some(new Z3SMTModel(z3Solver.getModel()))))
+      case Some(false) => Some((SMTResult.UNSAT, None))
+    }
+    r
+	  /*val r = z3Solver.checkAndGetModel match {
       case (None, _) => None
       case (Some(true), m) => Some(SMTResult.SAT, Some(new Z3SMTModel(m)))
       case (Some(false), _) => Some(SMTResult.UNSAT, None)
     }
-    r
+    r*/
   }
     
   protected def mkRegularADTReference(sort:Sort):ADTReference =
@@ -139,7 +146,7 @@ class Z3SolverAPI(fsimpl:Simplifier[Formula],
   
   protected def isBuiltInFunction(x:Function) = {
     x.name match {
-      case "+" | "-" | "*" => true
+      case "+" | "-" | "*" | "/" => true
       case _ => false
     }
   }
@@ -153,6 +160,7 @@ class Z3SolverAPI(fsimpl:Simplifier[Formula],
           z3ctx.mkUnaryMinus(argsASTs(0))
         else z3ctx.mkSub(argsASTs:_*)
       case "*" => z3ctx.mkMul(argsASTs:_*)
+      case "/" => z3ctx.mkDiv(argsASTs(0), argsASTs(1))
     }
   }
   
@@ -171,8 +179,8 @@ class Z3SolverAPI(fsimpl:Simplifier[Formula],
   protected def mkDistinct(seq:Seq[AST]):AST =
     z3ctx.mkDistinct(seq:_*)
     
-  protected def mkIf(cond:AST, then:AST, eelse:AST):AST = 
-    z3ctx.mkITE(cond, then, eelse)
+  protected def mkIf(cond:AST, tthen:AST, eelse:AST):AST =
+    z3ctx.mkITE(cond, tthen, eelse)
     
   protected def mkOr(seq:Seq[AST]):AST =
     z3ctx.mkOr(seq:_*)

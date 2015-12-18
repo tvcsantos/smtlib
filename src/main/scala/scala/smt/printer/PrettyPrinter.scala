@@ -10,7 +10,7 @@ object PrettyPrinter {
     case Imp(l, r) => pf"$l => $r"
     case Equiv(l, r) => pf"$l <=> $r"
     case Not(f) => pf"not $f"
-    case If(c, then, eelse) => pf"if $c then $then else $eelse"
+    case If(c, tthen, eelse) => pf"if $c then $tthen else $eelse"
     case Let(x, t, in) => s"let $x = " + pt"$t in " + pf"$in" 
     case QuantifiedFormula(q, l, f) =>
       import Quantifier._
@@ -70,6 +70,8 @@ object PrettyPrinter {
       }}"*/*/
     case NumLit(n) => n toString
     case BoolLit(b) => b toString
+    case x:AbstractTerm =>
+      throw new Exception(s"Term $x not supported")
   }
   
   def asString(ty: Type): String = ty match {

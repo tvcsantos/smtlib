@@ -6,6 +6,9 @@ import scalax.visitor.FreeNamesVisitor
 
 class FormulaSubstitution(tv:SubstitutionVisitor[Term, Term], 
     fnv:FreeNamesVisitor[Term]) extends SubstitutionVisitor[Formula, Term] {
+
+	import scalax.visitor.VisitorException
+
 	def visit(e:Formula, a:(String, Term)):Formula = {
 	  val x = a._1
 	  val t = a._2
@@ -20,8 +23,8 @@ class FormulaSubstitution(tv:SubstitutionVisitor[Term, Term],
 	    case Equiv(l, r) =>
 	      Equiv(visit(l, (x, t)), visit(r, (x, t)))
 	    case Not(b) => Not(visit(b, (x, t)))
-	    case If(c, then, eelse) =>
-	      If(visit(c, (x, t)), visit(then, (x, t)), visit(eelse, (x, t)))
+	    case If(c, tthen, eelse) =>
+	      If(visit(c, (x, t)), visit(tthen, (x, t)), visit(eelse, (x, t)))
 	    case Let(y, u, in) =>
 	      if (x == y || // replacing bound variable
             ((t visit(fnv, ())) contains(y))) // y \in fn t, y will be bound 
@@ -50,6 +53,8 @@ class FormulaSubstitution(tv:SubstitutionVisitor[Term, Term],
 	      Distinct(list.map(tv.visit(_, (x, t)).asInstanceOf[Variable]))
 	    case Eqs(set) =>
 	      Eqs(set.map(tv.visit(_, (x, t)).asInstanceOf[Variable]))
+			case x:AbstractFormula =>
+				throw new VisitorException(s"Formula $x not supported")
 	  }	  
 	}
 }

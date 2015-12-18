@@ -5,7 +5,9 @@ import scalax.visitor.BoundVariablesVisitor
 
 class FormulaBoundVariables(tv:BoundVariablesVisitor[Term, Identifier])
 	extends BoundVariablesVisitor[Formula, Identifier] {
-  
+
+  import scalax.visitor.VisitorException
+
   def visit(e:Formula, a:Unit = ()):Set[Identifier] = {
     e match {
       case x:BoolFormula => Set()
@@ -18,8 +20,8 @@ class FormulaBoundVariables(tv:BoundVariablesVisitor[Term, Identifier])
       case Equiv(l, r) =>
         visit(l) ++ visit(r)
       case Not(b) => visit(b)
-      case If(c, then, eelse) =>
-        visit(c) ++ visit(then) ++ visit(eelse)
+      case If(c, tthen, eelse) =>
+        visit(c) ++ visit(tthen) ++ visit(eelse)
       case Let(x, t, b) =>
         (tv visit(t)) ++ visit(b) + Variable(x, t.getType)
       case QuantifiedFormula(q, l, f) =>
@@ -32,6 +34,8 @@ class FormulaBoundVariables(tv:BoundVariablesVisitor[Term, Identifier])
         list.flatMap(tv visit(_)).toSet
       case Eqs(set) =>
         set.flatMap(tv visit(_))
+      case x:AbstractFormula =>
+        throw new VisitorException(s"Formula $x not supported")
     }
   }
 }

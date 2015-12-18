@@ -4,6 +4,8 @@ import scala.smt._
 import scalax.visitor.BoundVariablesVisitor
 
 class TermBoundVariables extends BoundVariablesVisitor[Term, Identifier] {
+
+  import scalax.visitor.VisitorException
   
   def visit(e:Term, a:Unit = ()):Set[Identifier] = {
     e match {
@@ -13,6 +15,8 @@ class TermBoundVariables extends BoundVariablesVisitor[Term, Identifier] {
         x.args.flatMap(visit(_)).toSet
       case x:NumLit => Set()
       case x:BoolLit => Set()
+      case x:AbstractTerm =>
+        throw new VisitorException(s"Term $x not supported")
     }
   }
 }

@@ -6,6 +6,9 @@ import scalax.visitor.BoundNamesListVisitor
 
 class FormulaBoundNamesList(tv:BoundNamesListVisitor[Term]) 
 	extends BoundNamesListVisitor[Formula] {
+
+  import scalax.visitor.VisitorException
+
   def visit(e:Formula, a:Unit = ()):List[String] = {
     e match {
       case x:BoolFormula => Nil
@@ -18,8 +21,8 @@ class FormulaBoundNamesList(tv:BoundNamesListVisitor[Term])
       case Equiv(l, r) =>
         visit(l) ++ visit(r)
       case Not(b) => visit(b)
-      case If(c, then, eelse) =>
-      	visit(c) ++ visit(then) ++ visit(eelse)
+      case If(c, tthen, eelse) =>
+      	visit(c) ++ visit(tthen) ++ visit(eelse)
       case Let(x, t, b) =>
       	x :: ((tv visit(t)) ++ visit(b))
       case QuantifiedFormula(q, l, f) =>
@@ -32,6 +35,8 @@ class FormulaBoundNamesList(tv:BoundNamesListVisitor[Term])
         list.flatMap(tv visit(_))
       case Eqs(set) =>
         set.toList.flatMap(tv visit(_))
+      case x:AbstractFormula =>
+        throw new VisitorException(s"Formula $x not supported")
     }
   }
 }

@@ -357,7 +357,7 @@ abstract class AbstractSMTSolver(fsimpl:Simplifier[Formula],
       dm:Map[Type, (Sort, Set[FunDef], Set[TheoDef])], 
       bc:SeqEnvironment[Type]):AST = {
     t match {
-      case x if (x isValue) => mkValue(x, tm, dm, bc)
+      case x:scala.smt.Value /*if (x isValue)*/ => mkValue(x, tm, dm, bc)
       case x:Variable =>
         mkConst(x.name, (tm get x.getType.get).get, bc)
       case x:Function =>
@@ -379,19 +379,23 @@ abstract class AbstractSMTSolver(fsimpl:Simplifier[Formula],
             case Some(y) => mkFunction(y._2, argsASTs/*, Some(y._1)*/)
           }
         }
+      case x:AbstractTerm =>
+        throw new Exception(s"Term $x not supported")
     }
   }
   
   //precondition x isValue
-  protected final def mkValue(x:Term, tm:Map[Type, TypeDef],
+  protected final def mkValue(x:scala.smt.Value/*Term*/, tm:Map[Type, TypeDef],
       dm:Map[Type, (Sort, Set[FunDef], Set[TheoDef])], 
       bc:SeqEnvironment[Type]):AST = {
-    def mkValueAux(x:Term, t:Type, tm:Map[Type, TypeDef], 
+    def mkValueAux(x:scala.smt.Value/*Term*/, t:Type, tm:Map[Type, TypeDef],
         dm:Map[Type, (Sort, Set[FunDef], Set[TheoDef])]):AST = {
       x match {
         case y:NumLit =>
           mkNumLit(y.num, tm.get(t).get)
         case y:BoolLit => mkBoolLit(y.b)
+        case y:AbstractValue =>
+          throw new Exception(s"Value $x not supported")
       }
     }
     val ty = x.getType.get
@@ -419,7 +423,7 @@ abstract class AbstractSMTSolver(fsimpl:Simplifier[Formula],
     
   protected def mkDistinct(seq:Seq[AST]):AST
     
-  protected def mkIf(cond:AST, then:AST, eelse:AST):AST
+  protected def mkIf(cond:AST, tthen:AST, eelse:AST):AST
   
   protected def mkEquality(left:AST, right:AST):AST
   
@@ -438,8 +442,8 @@ abstract class AbstractSMTSolver(fsimpl:Simplifier[Formula],
       case Imp(l, r) => mkImp(mkAST(l, tm, dm, bc), mkAST(r, tm, dm, bc))
       case Equiv(l, r) => mkEquiv(mkAST(l, tm, dm, bc), mkAST(r, tm, dm, bc))
       case Not(b) => mkNot(mkAST(b, tm, dm, bc))
-      case If(c, then, eelse) =>
-        mkIf(mkAST(c, tm, dm, bc), mkAST(then, tm, dm, bc), 
+      case If(c, tthen, eelse) =>
+        mkIf(mkAST(c, tm, dm, bc), mkAST(tthen, tm, dm, bc),
             mkAST(eelse, tm, dm, bc))
       case Let(x, t, b) =>
         mkAST(b visit(getFormulaSubstitution, (x, t)), tm, dm, bc)
