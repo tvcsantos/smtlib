@@ -1,0 +1,16 @@
+#!/bin/sh
+if [ $# -gt 0 ]; then
+	git checkout -b release-$1 develop
+	git commit -a -m "Released version $1"
+	git checkout master
+	git merge --no-ff release-$1
+	git tag -a $1
+	git push --tags
+	git push
+	git checkout develop
+	git merge --no-ff release-$1
+	git branch -d release-$1
+	git push
+else
+	echo "You must provide a version number for the release"
+fi
