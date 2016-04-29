@@ -3,7 +3,7 @@ smtlib
 
 Generic SMT Front-End For Multiple Solvers
 
-This repository as moved to https://bitbucket.org/tvcsantos/smtlib
+This repository has moved to https://bitbucket.org/tvcsantos/smtlib
 
 Prerequisites
 ======
