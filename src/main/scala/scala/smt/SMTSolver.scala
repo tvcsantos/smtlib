@@ -1,7 +1,6 @@
 package scala.smt
 
 import scalax.util.Env
-import scalax.util.Debugger
 
 object SMTSolver {
   import scala.collection.mutable.{
